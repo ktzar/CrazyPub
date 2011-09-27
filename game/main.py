@@ -115,7 +115,7 @@ class Bartending():
             if ok == False:
                 return
             
-            chance = 100-self.clients_served
+            chance = 150-self.clients_served
             if chance < 10:
                 chance = 10
             if random.randint(0,chance) == 0:

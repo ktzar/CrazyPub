@@ -1,4 +1,5 @@
 import pygame
+import random
 import utils
 
 
@@ -7,10 +8,12 @@ class Client(pygame.sprite.Sprite):
     lanes_y     = [105, 200, 295, 393]
     lanes_x_ini = [120, 90, 60, 30]
     lanes_x_end = [300, 338, 370, 407]
+    images = ['client_0.png', 'client_1.png', 'client_2.png']
 
     def __init__(self, bartending, lane):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = utils.load_image('client.png')
+        pic = random.randint(0,len(Client.images)-1)
+        self.image, self.rect = utils.load_image(Client.images[pic])
         self.cur_lane   = lane
         self.rect.top   = Client.lanes_y[lane] -25 
         self.rect.left  = Client.lanes_x_ini[lane]
