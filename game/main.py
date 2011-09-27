@@ -27,7 +27,8 @@ class Bartending():
         #Initialize Everything
         pygame.init()
         self.screen = pygame.display.set_mode((512, 480), pygame.DOUBLEBUF)
-        pygame.display.set_caption('Bartending')
+        pygame.display.set_caption('Crazy Pub')
+        pygame.display.toggle_fullscreen()
         pygame.mouse.set_visible(0)
         #icon
         #icon, foo = utils.load_image('icon.png')
@@ -43,6 +44,7 @@ class Bartending():
         #game variables
         self.score = 0
         self.mugs = 10
+        self.clients_served = 0
         #Display The Background
         self.screen.blit(self.background, (0, 0))
         pygame.display.flip()
@@ -66,8 +68,14 @@ class Bartending():
         self.game_finished = False
         self.level_finished = False
 
+    def client_gone(self):
+        self.game_finished = True
+
     def break_beer(self):
-        self.mugs -= 1
+        if self.mugs < 1:
+            self.game_finished = True
+        else:
+            self.mugs -= 1
 
     def handle_keys(self):
         #Handle Input Events
@@ -106,6 +114,23 @@ class Bartending():
             ok = self.handle_keys()
             if ok == False:
                 return
+            
+            chance = 100-self.clients_served
+            if chance < 10:
+                chance = 10
+            if random.randint(0,chance) == 0:
+                lane = random.randint(0,3)
+                self.clients.add(Client(self, lane))
+
+            for beer in self.beers:
+                clients_drinking  = pygame.sprite.spritecollide(beer, self.clients, True)
+                for client_drinking in clients_drinking:
+                    self.score += 100
+                    self.clients_served += 1
+                    beer.kill()
+                    break
+
+
 
             if self.game_started == False:
                 start_text = self.font.render('Press any key to start', 2, (255,255,255))
@@ -132,7 +157,6 @@ class Bartending():
             all_sprites.update()
 
             #Move and draw the background
-            print self.mugs
             score_text = "Score: {0} Mugs: {1}".format(self.score, self.mugs)
             text = self.font.render(score_text, 1, (255, 255, 255))
             text_shadow = self.font.render(score_text, 1, (0,0,0))
@@ -143,9 +167,9 @@ class Bartending():
 
             if self.game_finished == True:
                 gameover_text = self.font.render("Game Over", 2, (255, 255, 255))
-                self.screen.blit(gameover_text, (280, 200))
+                self.screen.blit(gameover_text, (200, 200))
                 gameover_text = self.font.render("Press Esc", 2, (255, 255, 255))
-                self.screen.blit(gameover_text, (280, 230))
+                self.screen.blit(gameover_text, (200, 230))
             else:
                 all_sprites.draw(self.screen)
             #draw all the groups of sprites

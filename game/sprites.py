@@ -2,6 +2,27 @@ import pygame
 import utils
 
 
+class Client(pygame.sprite.Sprite):
+
+    lanes_y     = [105, 200, 295, 393]
+    lanes_x_ini = [120, 90, 60, 30]
+    lanes_x_end = [300, 338, 370, 407]
+
+    def __init__(self, bartending, lane):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = utils.load_image('client.png')
+        self.cur_lane   = lane
+        self.rect.top   = Client.lanes_y[lane] -25 
+        self.rect.left  = Client.lanes_x_ini[lane]
+        self.speed = 1
+        self.bartending = bartending
+
+    def update(self):
+        self.rect.left  += self.speed
+        if self.rect.left > Client.lanes_x_end[self.cur_lane]:
+            self.bartending.client_gone()
+
+
 class Bartender(pygame.sprite.Sprite):
 
     positions = [\
@@ -41,9 +62,10 @@ class Beer(pygame.sprite.Sprite):
         self.rect.left = position.left
         self.lane = lane
         self.bartending = bartending
+        self.speed = 1
 
     def update(self):
-        self.rect = self.rect.move((-2,0))
+        self.rect = self.rect.move((-self.speed,0))
         if self.rect.left < Beer.lane_init[self.lane]:
             self.bartending.break_beer()
             self.kill()
