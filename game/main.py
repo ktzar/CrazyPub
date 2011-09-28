@@ -71,6 +71,22 @@ class Bartending():
     def client_gone(self):
         self.game_finished = True
 
+    def return_beer(self, client):
+        empty_beer = EmptyBeer(self, client.rect, client.cur_lane)
+        self.beers.add( empty_beer )
+
+
+    def emptybeer_arrived(self, emptybeer):
+        #check if the bartender is in the same lane as the beer
+        emptybeer.kill()
+        if emptybeer.cur_lane != self.bartender.cur_lane :
+            if self.mugs < 1:
+                self.game_finished = True
+            else:
+                self.mugs -= 1
+        else:
+            self.score += 500
+
     def break_beer(self):
         if self.mugs < 1:
             self.game_finished = True
@@ -115,7 +131,7 @@ class Bartending():
             if ok == False:
                 return
             
-            chance = 150-self.clients_served
+            chance = 100-self.clients_served
             if chance < 10:
                 chance = 10
             if random.randint(0,chance) == 0:
@@ -128,6 +144,7 @@ class Bartending():
                     self.score += 100
                     self.clients_served += 1
                     beer.kill()
+                    self.return_beer(client_drinking)
                     break
 
 
