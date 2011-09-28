@@ -34,24 +34,41 @@ class Bartender(pygame.sprite.Sprite):
         {'x':400,'y':290},\
         {'x':427,'y':390}\
     ]
+    STILL = 0
+    MOVING = 1
+    MOVING2 = 2
 
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = utils.load_image('tender.png')
+        self.image_still, self.rect = utils.load_image('tender.png')
+        self.image_moving, foo = utils.load_image('tender_moving.png')
         self.cur_lane = 0
         self.num_lanes = 4
+        self.state = Bartender.STILL
 
     def update(self):
-        self.rect.top   = Bartender.positions[self.cur_lane]['y']
-        self.rect.left  = Bartender.positions[self.cur_lane]['x']
+        if self.state == Bartender.MOVING:
+            self.image = self.image_moving
+            self.rect.top   = (self.rect.top + Bartender.positions[self.cur_lane]['y'])/2
+            self.rect.left  = (self.rect.left + Bartender.positions[self.cur_lane]['x'])/2
+            self.state = Bartender.MOVING2
+        elif self.state == Bartender.MOVING2:
+            self.image = self.image_moving
+            self.state = Bartender.STILL
+        else:
+            self.image = self.image_still
+            self.rect.top   = Bartender.positions[self.cur_lane]['y']
+            self.rect.left  = Bartender.positions[self.cur_lane]['x']
 
     def move_down(self):
         if self.cur_lane < self.num_lanes-1:
             self.cur_lane += 1
+            self.state = Bartender.MOVING
 
     def move_up(self):
         if self.cur_lane > 0:
             self.cur_lane -= 1
+            self.state = Bartender.MOVING
 
 
 class Beer(pygame.sprite.Sprite):
