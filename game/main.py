@@ -3,6 +3,7 @@ import os, pygame, time
 import random
 from pygame.locals import *
 from sprites import *
+from stage import *
 import utils
 
 class Background(pygame.Surface):
@@ -41,15 +42,20 @@ class Bartending():
         #self.sounds['music'].play()
         #Create The Backgound
         self.background, foo = utils.load_image('back.png')
+
         #game variables
+        self.speed = 50 #the lower the faster
         self.score = 0
         self.mugs = 10
         self.clients_served = 0
+        self.time = 0 #to check the stage for clients
+
         #Display The Background
         self.screen.blit(self.background, (0, 0))
         pygame.display.flip()
 
 
+        self.level = Stage('level_1')
         #The player's ship
         self.bartender = Bartender()
         #The dash indicators
@@ -73,6 +79,7 @@ class Bartending():
 
     def return_beer(self, client):
         empty_beer = EmptyBeer(self, client.rect, client.cur_lane)
+        client.kill()
         self.beers.add( empty_beer )
 
 
@@ -130,24 +137,6 @@ class Bartending():
             ok = self.handle_keys()
             if ok == False:
                 return
-            
-            chance = 100-self.clients_served
-            if chance < 10:
-                chance = 10
-            if random.randint(0,chance) == 0:
-                lane = random.randint(0,3)
-                self.clients.add(Client(self, lane))
-
-            for beer in self.beers:
-                clients_drinking  = pygame.sprite.spritecollide(beer, self.clients, True)
-                for client_drinking in clients_drinking:
-                    self.score += 100
-                    self.clients_served += 1
-                    beer.kill()
-                    self.return_beer(client_drinking)
-                    break
-
-
 
             if self.game_started == False:
                 start_text = self.font.render('Press any key to start', 2, (255,255,255))
@@ -160,6 +149,30 @@ class Bartending():
                 self.screen.blit(start_text, (150, 200))
                 pygame.display.flip()
                 continue
+
+            if self.time % self.speed == 0:
+                if self.time/self.speed > self.level.get_max_time():
+                    self.game_finished = True
+                    continue
+                clients = self.level.get_clients_in_t(self.time/self.speed) #returns an array with 1 in the lanes with clients
+                for i in range(len(clients)):
+                    if clients[i] == 1:
+                        self.clients.add(Client(self, lane=i))
+
+            for beer in self.beers:
+                if not isinstance(beer, Beer):
+                    continue
+                clients_drinking  = pygame.sprite.spritecollide(beer, self.clients, False)
+                for client_drinking in clients_drinking:
+                    if client_drinking.state == Client.WAITING:
+                        self.score += 100
+                        self.clients_served += 1
+                        beer.kill()
+                        client_drinking.start_drinking()
+                        #self.return_beer(client_drinking)
+                        break
+
+
 
             try:
                 pass
@@ -191,6 +204,7 @@ class Bartending():
                 all_sprites.draw(self.screen)
             #draw all the groups of sprites
             pygame.display.flip()
+            self.time += 1
 
     #Game Over
 

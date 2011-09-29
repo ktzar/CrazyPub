@@ -5,13 +5,20 @@ import utils
 
 class Client(pygame.sprite.Sprite):
 
-    lanes_y     = [105, 200, 295, 393]
+    lanes_y     = [103, 198, 296, 391]
     lanes_x_ini = [120, 90, 60, 30]
     lanes_x_end = [300, 338, 370, 407]
-    images = ['client_1.png', 'client_2.png', 'client_3.png',  'client_4.png']
+    images      = ['client_1.png', 'client_2.png', 'client_3.png',  'client_4.png']
+    WAITING     = 0
+    DRINKING    = 1
+    DRUNK       = 2
+    num_clients = 0
 
     def __init__(self, bartending, lane):
         pygame.sprite.Sprite.__init__(self)
+        print "New client in lane {0}".format(lane)
+        self.num_client = Client.num_clients
+        Client.num_clients += 1
         pic = random.randint(0,len(Client.images)-1)
         self.image, self.rect = utils.load_image(Client.images[pic])
         self.cur_lane   = lane
@@ -19,12 +26,23 @@ class Client(pygame.sprite.Sprite):
         self.rect.left  = Client.lanes_x_ini[lane]
         self.speed = 1
         self.bartending = bartending
+        self.age = 0
+        self.state = Client.WAITING
+        self.DRINKING_TIME = 100
 
     def update(self):
-        self.rect.left  += self.speed
-        if self.rect.left > Client.lanes_x_end[self.cur_lane]:
-            self.bartending.client_gone()
+        if self.state == Client.WAITING:
+            self.rect.left += self.speed
+            if self.rect.left > Client.lanes_x_end[self.cur_lane]:
+                self.bartending.client_gone()
+        if self.state == Client.DRINKING:
+            self.age += 1
+            if self.age > self.DRINKING_TIME:
+                self.bartending.return_beer(self)
+                #self.state = Client.DRUNK
 
+    def start_drinking(self):
+        self.state = Client.DRINKING
 
 class Bartender(pygame.sprite.Sprite):
 
