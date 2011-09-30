@@ -1,4 +1,5 @@
-from game.main import Bartending
+from game.main import *
 #this calls the 'main' function when this script is executed
-if __name__ == '__main__': bartending = Bartending()
+if __name__ == '__main__': CrazyPub()
+
 

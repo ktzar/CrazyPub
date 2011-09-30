@@ -12,6 +12,7 @@ class Menu():
         self.chosen_option = 0
         self.options = [ "Start game", "Options", "Quit" ]
         self.age = 0
+        self.game_start = False
 
     def handle_keys(self):
         #Handle Input Events
@@ -23,6 +24,8 @@ class Menu():
                     self.option_up()
                 elif event.key == K_DOWN:
                     self.option_down()
+                elif event.key == K_ENTER:
+                    self.game_start = True
 
         return True
 
@@ -49,15 +52,17 @@ class Menu():
         for option in self.options:
             if i==self.chosen_option:
                 color = (255,100,100)
-                angle = math.sin(self.age/10)  * 15
+                angle = math.sin(self.age/10)  * 3
+                _y = int(y + angle * angle)
             else:
                 color = (255,255,255)    
                 angle = 0
+                _y = y
 
-            text = pygame.transform.rotate(self.font.render(option, 2, (0,0,0,0)), 10)
-            self.screen.blit(text, (152, y+2))
-            text = pygame.transform.rotate(self.font.render(option, 2, color), 10)
-            self.screen.blit(text, (150, y))
+            text = self.font.render(option, 2, (0,0,0,0))
+            self.screen.blit(text, (152, _y+2))
+            text = self.font.render(option, 2, color)
+            self.screen.blit(text, (150, _y))
             y += 80
             i += 1
 
