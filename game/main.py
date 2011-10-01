@@ -35,6 +35,9 @@ def CrazyPub():
             menu.loop()
         elif menu.selected_option == 0:
             bartending.loop()
+            if bartending.game_finished == True:
+                menu = Menu(screen)
+                bartending = Bartending(screen)
         elif menu.selected_option == 1:
             options.loop()
             if options.finished == True:

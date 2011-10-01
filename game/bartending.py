@@ -106,8 +106,7 @@ class Bartending():
                 #exit
                 return
             elif event.type == KEYDOWN and event.key == K_ESCAPE and self.game_finished == True:
-                pygame.quit()
-                quit()
+                self.game_finished = True
                 
             if event.type == KEYDOWN:
                 self.game_started = True
@@ -130,6 +129,8 @@ class Bartending():
     def loop(self):
         #handle input events
         esc_pressed = self.handle_keys()
+        if self.game_finished:
+            return
         if esc_pressed == False:
             return
 
