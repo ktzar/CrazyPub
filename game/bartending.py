@@ -32,9 +32,6 @@ class Bartending():
         self.sounds['music'] = utils.load_sound('music.ogg')
         self.sounds['glass'] = utils.load_sound('glass.ogg')
         self.sounds['throw'] = utils.load_sound('throw.ogg')
-        self.sounds['shout_0'] = utils.load_sound('shout_0.ogg')
-        self.sounds['shout_1'] = utils.load_sound('shout_1.ogg')
-        self.sounds['shout_2'] = utils.load_sound('shout_2.ogg')
         if 1 in self.options and self.options[1]['value'] == "On":
             self.sounds['music'].play()
         #Create The Backgound
@@ -79,7 +76,7 @@ class Bartending():
             self.sounds['throw'].play()
             empty_beer = EmptyBeer(self, client.rect, client.cur_lane)
             self.beers.add( empty_beer )
-        client.kill()
+        #client.kill()
 
 
     def emptybeer_arrived(self, emptybeer):
@@ -115,7 +112,7 @@ class Bartending():
                 if event.key == K_ESCAPE:
                     return False   #exit
                 elif event.key == K_SPACE:
-                    self.beers.add(Beer(self, self.bartender.rect, self.bartender.cur_lane))
+                    self.beers.add(Beer(self, self.bartender.get_new_beer_position(), self.bartender.cur_lane))
                     self.sounds['throw'].play()
                     pass
                 elif event.key == K_UP:
@@ -156,8 +153,6 @@ class Bartending():
             for i in range(len(clients)):
                 if clients[i] == 1:
                     self.clients.add(Client(self, lane=i))
-                    shout = self.sounds['shout_'+str(random.randint(0,2))]
-                    shout.play()
 
         for beer in self.beers:
             if not isinstance(beer, Beer):

@@ -13,10 +13,19 @@ class Client(pygame.sprite.Sprite):
     DRINKING    = 1
     DRUNK       = 2
     num_clients = 0
+    sounds      = []
 
     def __init__(self, bartending, lane):
         pygame.sprite.Sprite.__init__(self)
-        print "New client in lane {0}".format(lane)
+        #Load the sounds if they are not loaded 
+        #they will be load with the appeareance of the first client
+        if len(Client.sounds) == 0:
+            Client.sounds.append(utils.load_sound('shout_0.ogg'))
+            Client.sounds.append(utils.load_sound('shout_1.ogg'))
+            Client.sounds.append(utils.load_sound('shout_2.ogg'))
+        #assign a random sound to the client
+        shout = Client.sounds[random.randint(0,len(Client.sounds)-1)]
+        shout.play()
         self.num_client = Client.num_clients
         Client.num_clients += 1
         pic = random.randint(0,len(Client.images)-1)
@@ -27,31 +36,44 @@ class Client(pygame.sprite.Sprite):
         self.speed = 1
         self.bartending = bartending
         self.age = 0
+        self.time_drinking = 0
         self.state = Client.WAITING
         self.DRINKING_TIME = 100
 
     def update(self):
+        self.age += 1
+        #client is waiting for a beer
         if self.state == Client.WAITING:
-            self.rect.left += self.speed
+            #Advance "step by step"
+            if self.age %30 > 10:
+                self.rect.left += self.speed
             if self.rect.left > Client.lanes_x_end[self.cur_lane]:
                 self.bartending.client_gone()
+        #Client is drinking, wait DRINKING_TIME updates
+        #and go back in the meantime. It the client reaches 
+        #the beginning of the bar, kill it
         if self.state == Client.DRINKING:
-            self.age += 1
-            if self.age > self.DRINKING_TIME:
+            self.rect.left -= self.speed
+            self.time_drinking += 1
+            if self.rect.left < Client.lanes_x_ini[self.cur_lane]:
+                self.kill()
+            if self.time_drinking > self.DRINKING_TIME:
                 self.bartending.return_beer(self)
-                #self.state = Client.DRUNK
-
+                self.state = Client.WAITING
+    #Start counting the time drinking and change the state
     def start_drinking(self):
+        self.time_drinking = 0
         self.state = Client.DRINKING
 
 class Bartender(pygame.sprite.Sprite):
-
+    #The x,y positions that the bartender can be after moving to a new bar
     positions = [\
         {'x':330,'y':90},\
         {'x':358,'y':190},\
         {'x':400,'y':290},\
         {'x':427,'y':390}\
     ]
+    #Constants for animation states
     STILL = 0
     MOVING = 1
     MOVING2 = 2
@@ -65,6 +87,7 @@ class Bartender(pygame.sprite.Sprite):
         self.state = Bartender.STILL
 
     def update(self):
+        #If in the middle of the movement, set the sprite in the middle and blurred
         if self.state == Bartender.MOVING:
             self.image = self.image_moving
             self.rect.top   = (self.rect.top + Bartender.positions[self.cur_lane]['y'])/2
@@ -87,7 +110,12 @@ class Bartender(pygame.sprite.Sprite):
         if self.cur_lane > 0:
             self.cur_lane -= 1
             self.state = Bartender.MOVING
-
+    
+    def get_new_beer_position(self):
+        rect = self.rect
+        rect.left = Bartender.positions[self.cur_lane]['x']
+        rect.top = Bartender.positions[self.cur_lane]['y']
+        return rect
 
 class Beer(pygame.sprite.Sprite):
 
