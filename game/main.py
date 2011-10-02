@@ -24,7 +24,7 @@ def CrazyPub():
     about       = About(screen)
     clock = pygame.time.Clock()
 
-    if options.values[1]['value'] == "On":
+    if 'Music' in options.values and options.values['Music'] == "On":
         music = utils.load_sound('level_1.ogg')
         music.play()
 

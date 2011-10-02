@@ -20,7 +20,11 @@ class Bartending():
         pygame.display.flip()
 
         #Load options
-        self.options = pickle.load(open('options.p', 'rb'))
+        try:
+            self.options = pickle.load(open('options.p', 'rb'))
+        except:
+            print "No options"
+            self.options = []
 
         self.game_paused = False
         #sounds
@@ -31,8 +35,7 @@ class Bartending():
         self.sounds['shout_0'] = utils.load_sound('shout_0.ogg')
         self.sounds['shout_1'] = utils.load_sound('shout_1.ogg')
         self.sounds['shout_2'] = utils.load_sound('shout_2.ogg')
-        print self.options[1]['value']
-        if self.options[1]['value'] == "On":
+        if 1 in self.options and self.options[1]['value'] == "On":
             self.sounds['music'].play()
         #Create The Backgound
         self.background, foo = utils.load_image('back.png')
@@ -72,8 +75,7 @@ class Bartending():
 
     def return_beer(self, client):
         print "Return beer"
-        print self.options[0]['value']
-        if self.options[0]['value'] == "Hard":
+        if 'Difficulty' in self.options and self.options['Difficulty'] == "Hard":
             self.sounds['throw'].play()
             empty_beer = EmptyBeer(self, client.rect, client.cur_lane)
             self.beers.add( empty_beer )

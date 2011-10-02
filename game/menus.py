@@ -84,15 +84,14 @@ class Options(Abstract_Menu):
     
     def __init__(self, screen):
         Abstract_Menu.__init__(self, screen)
-        self.values = [ \
-            {'name':'Difficulty', 'value':'Easy'},\
-            {'name':'Music', 'value':'On'}\
-        ]
+        self.values = { \
+            'Difficulty':'Easy',\
+            'Music':'On'\
+        }
         try:
             self.values = pickle.load(open('options.p', 'rb'))
         except:
             print "Options file not available"
-            pass
         self.go_back = False
 
     def handle_keys(self):
@@ -109,7 +108,7 @@ class Options(Abstract_Menu):
         #set options
         self.options = []
         for value in self.values:
-            self.options.append('{0}: {1}'.format(value['name'],value['value']))
+            self.options.append('{0}: {1}'.format(value,self.values[value]))
         self.options.append('Back')
         Abstract_Menu.loop(self)
         
@@ -117,16 +116,16 @@ class Options(Abstract_Menu):
     def toggle_option(self, num_option):
         #Difficulty
         if num_option == 0:
-            if self.values[0]['value'] == "Easy":
-                self.values[0]['value'] = "Hard"
+            if self.values['Difficulty'] == "Easy":
+                self.values['Difficulty'] = "Hard"
             else:
-                self.values[0]['value'] = "Easy"
+                self.values['Difficulty'] = "Easy"
         #Music
         elif num_option == 1:
-            if self.values[1]['value'] == "On":
-                self.values[1]['value'] = "Off"
+            if self.values['Music'] == "On":
+                self.values['Music'] = "Off"
             else:
-                self.values[1]['value'] = "On"
+                self.values['Music'] = "On"
         elif num_option == 2:
             self.finished = True
         pickle.dump(self.values, open('options.p', 'wb'))
