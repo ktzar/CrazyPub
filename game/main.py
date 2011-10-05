@@ -42,6 +42,8 @@ def CrazyPub():
             options.loop()
             if options.finished == True:
                 #recreate menu
+                if options.values[1]['value'] == 'Off':
+                    music.stop()
                 menu    = Menu(screen)
                 options = Options(screen)
         elif menu.selected_option == 2:
