@@ -78,21 +78,20 @@ class Menu(Abstract_Menu):
     
     def __init__(self, screen):
         Abstract_Menu.__init__(self, screen)
-        self.options = [ "Start game", "Options", "About", "Quit" ]
+        self.options = [ "Start game", "Options", "Highscores", "About", "Quit" ]
 
 class Options(Abstract_Menu):
     
     def __init__(self, screen):
         Abstract_Menu.__init__(self, screen)
-        self.values = [ \
-            {'name':'Difficulty', 'value':'Easy'},\
-            {'name':'Music', 'value':'On'}\
-        ]
+        self.values = { \
+            'Difficulty':'Easy',\
+            'Music':'On'\
+        }
         try:
             self.values = pickle.load(open('options.p', 'rb'))
         except:
             print "Options file not available"
-            pass
         self.go_back = False
 
     def handle_keys(self):
@@ -109,7 +108,7 @@ class Options(Abstract_Menu):
         #set options
         self.options = []
         for value in self.values:
-            self.options.append('{0}: {1}'.format(value['name'],value['value']))
+            self.options.append('{0}: {1}'.format(value,self.values[value]))
         self.options.append('Back')
         Abstract_Menu.loop(self)
         
@@ -117,16 +116,16 @@ class Options(Abstract_Menu):
     def toggle_option(self, num_option):
         #Difficulty
         if num_option == 0:
-            if self.values[0]['value'] == "Easy":
-                self.values[0]['value'] = "Hard"
+            if self.values['Difficulty'] == "Easy":
+                self.values['Difficulty'] = "Hard"
             else:
-                self.values[0]['value'] = "Easy"
+                self.values['Difficulty'] = "Easy"
         #Music
         elif num_option == 1:
-            if self.values[1]['value'] == "On":
-                self.values[1]['value'] = "Off"
+            if self.values['Music'] == "On":
+                self.values['Music'] = "Off"
             else:
-                self.values[1]['value'] = "On"
+                self.values['Music'] = "On"
         elif num_option == 2:
             self.finished = True
         pickle.dump(self.values, open('options.p', 'wb'))
@@ -148,7 +147,7 @@ class About(Abstract_Menu):
         ]
 
     def handle_keys(self):
-        #Only listen to ESC, don't execute abstract's handle_keys
+        #Only listen to ESC, don't execute parent's handle_keys
         #since there are no options to choose from
         self.events = pygame.event.get()
         for event in self.events:
@@ -157,3 +156,63 @@ class About(Abstract_Menu):
                     self.finished = True
         return True
 
+class Highscores(Abstract_Menu):
+    def __init__(self, screen):
+        Abstract_Menu.__init__(self, screen)
+        self.font = utils.load_font('saloon.ttf', 16)
+        self.line_height = 40
+        self.left_margin = 52
+
+        try:
+            self.highscores = pickle.load(open('highscores.p', 'rb'))
+        except:
+            self.highscores = [ {'name':'kTzAR','score':22000} ]
+            pickle.dump(self.highscores, open('highscores.p', 'wb'))
+            print "Highscores file not available, created new"
+
+        self.options = [ 'HIGH-SCORES' ]
+        for highscore in self.highscores :
+            self.options.append(highscore['name']+': '+str(highscore['score']))
+
+    def handle_keys(self):
+        #Only listen to ESC, don't execute parent's handle_keys
+        #since there are no options to choose from
+        self.events = pygame.event.get()
+        for event in self.events:
+            if event.type == KEYDOWN:                 
+                if event.key == K_ESCAPE:
+                    self.finished = True
+        return True
+
+class Newhighscore(Abstract_Menu):
+    def __init__(self, screen, bartending):
+        Abstract_Menu.__init__(self, screen)
+        self.font = utils.load_font('saloon.ttf', 16)
+        self.player_name = 'Blablah'
+        self.bartending = bartending
+        self.age = 0
+
+        #No options in this menu
+        self.options = [ 'New High score', 'You made {0} points'.format(self.bartending.score) ]
+    def loop(self):
+        self.age+=1
+        if self.age % 10 < 5:
+            text = self.font.render(self.player_name, 2, (255,255,255))
+            self.screen.blit(text, (50, 300))
+        Abstract_Menu.loop(self)
+
+
+    def handle_keys(self):
+        #Only listen to ESC, don't execute parent's handle_keys
+        #since there are no options to choose from
+        self.events = pygame.event.get()
+        for event in self.events:
+            if event.type == KEYDOWN:                 
+                try:
+                    typed_character = chr(event.key)
+                except:
+                    pass
+                self.player_name += typed_character
+                if event.key == 13:
+                    print "Enter key"
+        return True

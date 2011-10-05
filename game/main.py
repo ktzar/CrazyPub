@@ -18,26 +18,37 @@ def CrazyPub():
 #icon, foo = utils.load_image('icon.png')
 #pygame.display.set_icon(icon)
 
-    bartending  = Bartending(screen)
-    menu        = Menu(screen)
-    options     = Options(screen)
-    about       = About(screen)
+    bartending      = Bartending(screen)
+    menu            = Menu(screen)
+    options         = Options(screen)
+    about           = About(screen)
+    highscores      = Highscores(screen)
+    newhighscore    = False
     clock = pygame.time.Clock()
 
-    if options.values[1]['value'] == "On":
+    if 'Music' in options.values and options.values['Music'] == "On":
         music = utils.load_sound('level_1.ogg')
         music.play()
 
 
     while 1:
         clock.tick(100)
+        #Main menu loop
         if menu.selected_option == -1:
             menu.loop()
+        #Game loop
         elif menu.selected_option == 0:
             bartending.loop()
+            #Game finished, create newhighscore screen
             if bartending.game_finished == True:
-                menu = Menu(screen)
-                bartending = Bartending(screen)
+                if newhighscore == False:
+                    newhighscore = Newhighscore(screen, bartending)
+                newhighscore.loop()
+                #Name entered
+                if newhighscore.finished == True:
+                    menu = Menu(screen)
+                    bartending = Bartending(screen)
+                    newhighscore = Newhighscore(screen, bartending)
         elif menu.selected_option == 1:
             options.loop()
             if options.finished == True:
@@ -47,6 +58,12 @@ def CrazyPub():
                 menu    = Menu(screen)
                 options = Options(screen)
         elif menu.selected_option == 2:
+            highscores.loop()
+            if highscores.finished == True:
+                #recreate menu
+                highscores = Highscores(screen)
+                menu    = Menu(screen)
+        elif menu.selected_option == 3:
             about.loop()
             if about.finished == True:
                 #recreate menu
