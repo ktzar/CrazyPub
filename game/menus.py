@@ -108,6 +108,7 @@ class Options(Abstract_Menu):
         #set options
         self.options = []
         for value in self.values:
+            print value
             self.options.append('{0}: {1}'.format(value,self.values[value]))
         self.options.append('Back')
         Abstract_Menu.loop(self)

@@ -74,9 +74,11 @@ class Bartender(pygame.sprite.Sprite):
         {'x':427,'y':390}\
     ]
     #Constants for animation states
-    STILL = 0
-    MOVING = 1
-    MOVING2 = 2
+    STILL       = 0
+    MOVING      = 1
+    MOVING2     = 2
+    GOING_LEFT  = 3
+    GOING_RIGHT = 4
 
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -85,35 +87,61 @@ class Bartender(pygame.sprite.Sprite):
         self.cur_lane = 0
         self.num_lanes = 4
         self.state = Bartender.STILL
+        #When the player goes left and right, the bartender goes "inside the bar"
+        self.inside_bar = 0
 
     def update(self):
         #If in the middle of the movement, set the sprite in the middle and blurred
         if self.state == Bartender.MOVING:
             self.image = self.image_moving
             self.rect.top   = (self.rect.top + Bartender.positions[self.cur_lane]['y'])/2
-            self.rect.left  = (self.rect.left + Bartender.positions[self.cur_lane]['x'])/2
+            self.rect.left  = (self.rect.left + Bartender.positions[self.cur_lane]['x'])/2 - self.inside_bar
             self.state = Bartender.MOVING2
         elif self.state == Bartender.MOVING2:
             self.image = self.image_moving
             self.state = Bartender.STILL
+        elif self.state == Bartender.GOING_RIGHT:
+            print "going right"
+            if self.inside_bar > 0:
+                self.inside_bar -= 2
+            self.rect.left  = Bartender.positions[self.cur_lane]['x'] - self.inside_bar
+        elif self.state == Bartender.GOING_LEFT:
+            print "going right"
+            if self.inside_bar < 200:
+                self.inside_bar += 2
+            self.rect.left  = Bartender.positions[self.cur_lane]['x'] - self.inside_bar
         else:
             self.image = self.image_still
             self.rect.top   = Bartender.positions[self.cur_lane]['y']
-            self.rect.left  = Bartender.positions[self.cur_lane]['x']
+            self.rect.left  = Bartender.positions[self.cur_lane]['x'] - self.inside_bar
 
+    def no_move_left(self):
+        self.state = Bartender.STILL
+
+    def no_move_right(self):
+        self.state = Bartender.STILL
+
+    def move_left(self):
+        self.state = Bartender.GOING_LEFT
+
+    def move_right(self):
+        self.state = Bartender.GOING_RIGHT
+    
     def move_down(self):
         if self.cur_lane < self.num_lanes-1:
             self.cur_lane += 1
             self.state = Bartender.MOVING
+            self.inside_bar = 0
 
     def move_up(self):
         if self.cur_lane > 0:
             self.cur_lane -= 1
             self.state = Bartender.MOVING
+            self.inside_bar = 0
     
     def get_new_beer_position(self):
         rect = self.rect
-        rect.left = Bartender.positions[self.cur_lane]['x']
+        rect.left = rect.left #Bartender.positions[self.cur_lane]['x']
         rect.top = Bartender.positions[self.cur_lane]['y']
         return rect
 
