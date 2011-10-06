@@ -103,12 +103,10 @@ class Bartender(pygame.sprite.Sprite):
             self.image = self.image_moving
             self.state = Bartender.STILL
         elif self.state == Bartender.GOING_RIGHT:
-            print "going right"
             if self.inside_bar > 0:
                 self.inside_bar -= 2
             self.rect.left  = Bartender.positions[self.cur_lane]['x'] - self.inside_bar
         elif self.state == Bartender.GOING_LEFT:
-            print "going right"
             if self.inside_bar < 200:
                 self.inside_bar += 2
             self.rect.left  = Bartender.positions[self.cur_lane]['x'] - self.inside_bar

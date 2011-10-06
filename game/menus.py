@@ -41,7 +41,7 @@ class Abstract_Menu():
         if self.chosen_option != 0:
             self.chosen_option -= 1
 
-    def loop(self):
+    def loop(self, flip=True):
         self.screen.blit(self.background, (0, 0))
         self.screen.blit(self.logo, (10, 50))
         self.age +=0.15
@@ -70,8 +70,8 @@ class Abstract_Menu():
             self.screen.blit(text, (x, _y))
             y += self.line_height
             i += 1
-
-        pygame.display.flip()
+        if flip == True:
+            pygame.display.flip()
 
 
 class Menu(Abstract_Menu):
@@ -192,17 +192,18 @@ class Newhighscore(Abstract_Menu):
         self.player_name = 'Insert your name'
         self.bartending = bartending
         self.any_key_pressed = False
-        self.age = 0
+        self.age_2 = 0
 
         #No options in this menu
-        self.options = [ 'New High score', 'You made {0} points'.format(self.bartending.score) , self.player_name]
+        self.options = [ 'New High score', 'You made {0} points'.format(self.bartending.score)]
     def loop(self):
-        self.options[2] = self.player_name
-        self.age+=1
-        if self.age % 10 < 5:
+        self.age_2 += 1
+        Abstract_Menu.loop(self, False)
+        if self.age_2 % 20 < 15:
             text = self.font.render(self.player_name, 2, (255,255,255))
             self.screen.blit(text, (50, 300))
-        Abstract_Menu.loop(self)
+
+        pygame.display.flip()
 
 
     def handle_keys(self):
