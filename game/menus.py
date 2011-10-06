@@ -189,13 +189,15 @@ class Newhighscore(Abstract_Menu):
     def __init__(self, screen, bartending):
         Abstract_Menu.__init__(self, screen)
         self.font = utils.load_font('saloon.ttf', 16)
-        self.player_name = 'Blablah'
+        self.player_name = 'Insert your name'
         self.bartending = bartending
+        self.any_key_pressed = False
         self.age = 0
 
         #No options in this menu
-        self.options = [ 'New High score', 'You made {0} points'.format(self.bartending.score) ]
+        self.options = [ 'New High score', 'You made {0} points'.format(self.bartending.score) , self.player_name]
     def loop(self):
+        self.options[2] = self.player_name
         self.age+=1
         if self.age % 10 < 5:
             text = self.font.render(self.player_name, 2, (255,255,255))
@@ -209,11 +211,21 @@ class Newhighscore(Abstract_Menu):
         self.events = pygame.event.get()
         for event in self.events:
             if event.type == KEYDOWN:                 
+                #Clean name the first time a key is pressed
+                if self.any_key_pressed == False:
+                    self.player_name = ''
+                    self.any_key_pressed = True
+                if event.key == K_RETURN:
+                    #TODO store highscore
+                    self.finished = False
+                    return
+                #Remove the last character
+                if event.key == K_BACKSPACE:
+                    self.player_name = self.player_name[:-1]
+                    return
                 try:
                     typed_character = chr(event.key)
                     self.player_name += typed_character
                 except:
                     pass
-                if event.key == 13:
-                    print "Enter key"
         return True

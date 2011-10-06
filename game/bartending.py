@@ -32,17 +32,18 @@ class Bartending():
         self.sounds['music'] = utils.load_sound('music.ogg')
         self.sounds['glass'] = utils.load_sound('glass.ogg')
         self.sounds['throw'] = utils.load_sound('throw.ogg')
-        if 1 in self.options and self.options[1]['value'] == "On":
+        if self.options['Music'] == "On":
+            print "Play music"
             self.sounds['music'].play()
         #Create The Backgound
         self.background, foo = utils.load_image('back.png')
 
         #game variables
-        self.speed = 50 #the lower the faster
-        self.score = 0
-        self.mugs = 10
         self.clients_served = 0
-        self.time = 0 #to check the stage for clients
+        self.speed  = 50 #the lower the faster
+        self.score  = 0
+        self.mugs   = 10
+        self.time   = 0 #to check the stage for clients
 
         #Display The Background
         self.screen.blit(self.background, (0, 0))
@@ -55,23 +56,22 @@ class Bartending():
         #The dash indicators
 
         #group that stores all enemies
-        self.beers       = pygame.sprite.Group()
+        self.beers   = pygame.sprite.Group()
         #group that stores all powerups
-        self.clients     = pygame.sprite.Group()
+        self.clients = pygame.sprite.Group()
         #group for information sprites in the screen, should be rendered the last one
-        self.hud         = pygame.sprite.Group()
+        self.hud     = pygame.sprite.Group()
         self.font = utils.load_font('saloon.ttf', 20)
 
 
-        self.game_started = False
-        self.game_finished = False
+        self.game_started   = False
+        self.game_finished  = False
         self.level_finished = False
 
     def client_gone(self):
         self.game_finished = True
 
     def return_beer(self, client):
-        print "Return beer"
         if 'Difficulty' in self.options and self.options['Difficulty'] == "Hard":
             self.sounds['throw'].play()
             empty_beer = EmptyBeer(self, client.rect, client.cur_lane)
@@ -80,7 +80,6 @@ class Bartending():
 
 
     def emptybeer_arrived(self, emptybeer):
-        print "emptybeer_arrived"
         #check if the bartender is in the same lane as the beer
         emptybeer.kill()
         if emptybeer.cur_lane != self.bartender.cur_lane :
@@ -113,6 +112,7 @@ class Bartending():
                 elif event.key == K_LEFT:
                     self.bartender.no_move_left()
 
+            #Key down presses
             if event.type == KEYDOWN:
                 self.game_started = True
                 if event.key == K_ESCAPE:

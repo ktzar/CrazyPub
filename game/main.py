@@ -48,7 +48,6 @@ def CrazyPub():
                 if newhighscore.finished == True:
                     menu = Menu(screen)
                     bartending = Bartending(screen)
-                    newhighscore = Newhighscore(screen, bartending)
         elif menu.selected_option == 1:
             options.loop()
             if options.finished == True:
