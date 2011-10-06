@@ -38,7 +38,7 @@ class Client(pygame.sprite.Sprite):
         self.age = 0
         self.time_drinking = 0
         self.state = Client.WAITING
-        self.DRINKING_TIME = 100
+        self.drinking_time = 25
 
     def update(self):
         self.age += 1
@@ -49,7 +49,7 @@ class Client(pygame.sprite.Sprite):
                 self.rect.left += self.speed
             if self.rect.left > Client.lanes_x_end[self.cur_lane]:
                 self.bartending.client_gone()
-        #Client is drinking, wait DRINKING_TIME updates
+        #Client is drinking, wait drinking_time updates
         #and go back in the meantime. It the client reaches 
         #the beginning of the bar, kill it
         if self.state == Client.DRINKING:
@@ -57,13 +57,15 @@ class Client(pygame.sprite.Sprite):
             self.time_drinking += 1
             if self.rect.left < Client.lanes_x_ini[self.cur_lane]:
                 self.kill()
-            if self.time_drinking > self.DRINKING_TIME:
+            if self.time_drinking > self.drinking_time:
                 self.bartending.return_beer(self)
                 self.state = Client.WAITING
     #Start counting the time drinking and change the state
     def start_drinking(self):
         self.time_drinking = 0
         self.state = Client.DRINKING
+        #every beer takes twice as much to get drank
+        self.drinking_time *= 2
 
 class Bartender(pygame.sprite.Sprite):
     #The x,y positions that the bartender can be after moving to a new bar

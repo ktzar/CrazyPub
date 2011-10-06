@@ -211,9 +211,9 @@ class Newhighscore(Abstract_Menu):
             if event.type == KEYDOWN:                 
                 try:
                     typed_character = chr(event.key)
+                    self.player_name += typed_character
                 except:
                     pass
-                self.player_name += typed_character
                 if event.key == 13:
                     print "Enter key"
         return True
