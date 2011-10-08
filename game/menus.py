@@ -41,7 +41,7 @@ class Abstract_Menu():
         if self.chosen_option != 0:
             self.chosen_option -= 1
 
-    def loop(self):
+    def loop(self, flip=True):
         self.screen.blit(self.background, (0, 0))
         self.screen.blit(self.logo, (10, 50))
         self.age +=0.15
@@ -70,15 +70,15 @@ class Abstract_Menu():
             self.screen.blit(text, (x, _y))
             y += self.line_height
             i += 1
-
-        pygame.display.flip()
+        if flip == True:
+            pygame.display.flip()
 
 
 class Menu(Abstract_Menu):
     
     def __init__(self, screen):
         Abstract_Menu.__init__(self, screen)
-        self.options = [ "Start game", "Options", "About", "Quit" ]
+        self.options = [ "Start game", "Options", "Highscores", "About", "Quit" ]
 
 class Options(Abstract_Menu):
     
@@ -108,6 +108,7 @@ class Options(Abstract_Menu):
         #set options
         self.options = []
         for value in self.values:
+            print value
             self.options.append('{0}: {1}'.format(value,self.values[value]))
         self.options.append('Back')
         Abstract_Menu.loop(self)
@@ -147,7 +148,7 @@ class About(Abstract_Menu):
         ]
 
     def handle_keys(self):
-        #Only listen to ESC, don't execute abstract's handle_keys
+        #Only listen to ESC, don't execute parent's handle_keys
         #since there are no options to choose from
         self.events = pygame.event.get()
         for event in self.events:
@@ -156,3 +157,76 @@ class About(Abstract_Menu):
                     self.finished = True
         return True
 
+class Highscores(Abstract_Menu):
+    def __init__(self, screen):
+        Abstract_Menu.__init__(self, screen)
+        self.font = utils.load_font('saloon.ttf', 16)
+        self.line_height = 40
+        self.left_margin = 52
+
+        try:
+            self.highscores = pickle.load(open('highscores.p', 'rb'))
+        except:
+            self.highscores = [ {'name':'kTzAR','score':22000} ]
+            pickle.dump(self.highscores, open('highscores.p', 'wb'))
+            print "Highscores file not available, created new"
+
+        self.options = [ 'HIGH-SCORES' ]
+        for highscore in self.highscores :
+            self.options.append(highscore['name']+': '+str(highscore['score']))
+
+    def handle_keys(self):
+        #Only listen to ESC, don't execute parent's handle_keys
+        #since there are no options to choose from
+        self.events = pygame.event.get()
+        for event in self.events:
+            if event.type == KEYDOWN:                 
+                if event.key == K_ESCAPE:
+                    self.finished = True
+        return True
+
+class Newhighscore(Abstract_Menu):
+    def __init__(self, screen, bartending):
+        Abstract_Menu.__init__(self, screen)
+        self.font = utils.load_font('saloon.ttf', 16)
+        self.player_name = 'Insert your name'
+        self.bartending = bartending
+        self.any_key_pressed = False
+        self.age_2 = 0
+
+        #No options in this menu
+        self.options = [ 'New High score', 'You made {0} points'.format(self.bartending.score)]
+    def loop(self):
+        self.age_2 += 1
+        Abstract_Menu.loop(self, False)
+        if self.age_2 % 20 < 15:
+            text = self.font.render(self.player_name, 2, (255,255,255))
+            self.screen.blit(text, (50, 300))
+
+        pygame.display.flip()
+
+
+    def handle_keys(self):
+        #Only listen to ESC, don't execute parent's handle_keys
+        #since there are no options to choose from
+        self.events = pygame.event.get()
+        for event in self.events:
+            if event.type == KEYDOWN:                 
+                #Clean name the first time a key is pressed
+                if self.any_key_pressed == False:
+                    self.player_name = ''
+                    self.any_key_pressed = True
+                if event.key == K_RETURN:
+                    #TODO store highscore
+                    self.finished = False
+                    return
+                #Remove the last character
+                if event.key == K_BACKSPACE:
+                    self.player_name = self.player_name[:-1]
+                    return
+                try:
+                    typed_character = chr(event.key)
+                    self.player_name += typed_character
+                except:
+                    pass
+        return True

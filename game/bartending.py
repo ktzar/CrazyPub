@@ -32,17 +32,18 @@ class Bartending():
         self.sounds['music'] = utils.load_sound('music.ogg')
         self.sounds['glass'] = utils.load_sound('glass.ogg')
         self.sounds['throw'] = utils.load_sound('throw.ogg')
-        if 1 in self.options and self.options[1]['value'] == "On":
+        if self.options['Music'] == "On":
+            print "Play music"
             self.sounds['music'].play()
         #Create The Backgound
         self.background, foo = utils.load_image('back.png')
 
         #game variables
-        self.speed = 50 #the lower the faster
-        self.score = 0
-        self.mugs = 10
         self.clients_served = 0
-        self.time = 0 #to check the stage for clients
+        self.speed  = 50 #the lower the faster
+        self.score  = 0
+        self.mugs   = 10
+        self.time   = 0 #to check the stage for clients
 
         #Display The Background
         self.screen.blit(self.background, (0, 0))
@@ -55,23 +56,22 @@ class Bartending():
         #The dash indicators
 
         #group that stores all enemies
-        self.beers       = pygame.sprite.Group()
+        self.beers   = pygame.sprite.Group()
         #group that stores all powerups
-        self.clients     = pygame.sprite.Group()
+        self.clients = pygame.sprite.Group()
         #group for information sprites in the screen, should be rendered the last one
-        self.hud         = pygame.sprite.Group()
+        self.hud     = pygame.sprite.Group()
         self.font = utils.load_font('saloon.ttf', 20)
 
 
-        self.game_started = False
-        self.game_finished = False
+        self.game_started   = False
+        self.game_finished  = False
         self.level_finished = False
 
     def client_gone(self):
         self.game_finished = True
 
     def return_beer(self, client):
-        print "Return beer"
         if 'Difficulty' in self.options and self.options['Difficulty'] == "Hard":
             self.sounds['throw'].play()
             empty_beer = EmptyBeer(self, client.rect, client.cur_lane)
@@ -80,7 +80,6 @@ class Bartending():
 
 
     def emptybeer_arrived(self, emptybeer):
-        print "emptybeer_arrived"
         #check if the bartender is in the same lane as the beer
         emptybeer.kill()
         if emptybeer.cur_lane != self.bartender.cur_lane :
@@ -107,6 +106,13 @@ class Bartending():
             elif event.type == KEYDOWN and event.key == K_ESCAPE and self.game_finished == True:
                 self.game_finished = True
                 
+            if event.type == KEYUP:
+                if event.key == K_RIGHT:
+                    self.bartender.no_move_right()
+                elif event.key == K_LEFT:
+                    self.bartender.no_move_left()
+
+            #Key down presses
             if event.type == KEYDOWN:
                 self.game_started = True
                 if event.key == K_ESCAPE:
@@ -115,6 +121,12 @@ class Bartending():
                     self.beers.add(Beer(self, self.bartender.get_new_beer_position(), self.bartender.cur_lane))
                     self.sounds['throw'].play()
                     pass
+                elif event.key == K_UP:
+                    self.bartender.move_up()
+                elif event.key == K_RIGHT:
+                    self.bartender.move_right()
+                elif event.key == K_LEFT:
+                    self.bartender.move_left()
                 elif event.key == K_UP:
                     self.bartender.move_up()
                 elif event.key == K_DOWN:
@@ -154,18 +166,24 @@ class Bartending():
                 if clients[i] == 1:
                     self.clients.add(Client(self, lane=i))
 
+        beers_catched  = pygame.sprite.spritecollide(self.bartender, self.beers, False)
+        for beer_catched in beers_catched:
+            if not isinstance(beer_catched, Beer):
+                beer_catched.kill()    
+
         for beer in self.beers:
             if not isinstance(beer, Beer):
-                continue
-            clients_drinking  = pygame.sprite.spritecollide(beer, self.clients, False)
-            for client_drinking in clients_drinking:
-                if client_drinking.state == Client.WAITING:
-                    self.score += 100
-                    self.clients_served += 1
-                    beer.kill()
-                    client_drinking.start_drinking()
-                    #self.return_beer(client_drinking)
-                    break
+                pass
+            else:
+                clients_drinking  = pygame.sprite.spritecollide(beer, self.clients, False)
+                for client_drinking in clients_drinking:
+                    if client_drinking.state == Client.WAITING:
+                        self.score += 100
+                        self.clients_served += 1
+                        beer.kill()
+                        client_drinking.start_drinking()
+                        #self.return_beer(client_drinking)
+                        break
         try:
             pass
         except:
