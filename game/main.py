@@ -51,9 +51,12 @@ def CrazyPub():
         elif menu.selected_option == 1:
             options.loop()
             if options.finished == True:
-                #recreate menu
+                #recreate menu and stop music if it was playing
                 if options.values['Music'] == 'Off':
-                    music.stop()
+                    try:
+                        music.stop()
+                    except NameError:
+                        pass
                 menu    = Menu(screen)
                 options = Options(screen)
         elif menu.selected_option == 2:

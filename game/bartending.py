@@ -24,7 +24,7 @@ class Bartending():
             self.options = pickle.load(open('options.p', 'rb'))
         except:
             print "No options"
-            self.options = []
+            self.options = {'Difficulty':'Hard', 'Music':'Off'}
 
         self.game_paused = False
         #sounds
@@ -33,7 +33,6 @@ class Bartending():
         self.sounds['glass'] = utils.load_sound('glass.ogg')
         self.sounds['throw'] = utils.load_sound('throw.ogg')
         if self.options['Music'] == "On":
-            print "Play music"
             self.sounds['music'].play()
         #Create The Backgound
         self.background, foo = utils.load_image('back.png')
@@ -144,6 +143,12 @@ class Bartending():
             return
         if esc_pressed == False:
             return
+        if self.level_finished == True and len(self.clients) == 0:
+            start_text = self.font.render('Level finished', 2, (255,255,255))
+            self.screen.blit(start_text, (150, 200))
+            pygame.display.flip()
+            return
+
 
         if self.game_started == False:
             start_text = self.font.render('Press any key to start', 2, (255,255,255))
@@ -162,9 +167,12 @@ class Bartending():
                 self.game_finished = True
                 return
             clients = self.level.get_clients_in_t(self.time/self.speed) #returns an array with 1 in the lanes with clients
-            for i in range(len(clients)):
-                if clients[i] == 1:
-                    self.clients.add(Client(self, lane=i))
+            if clients == False:
+                self.level_finished = True
+            else:
+                for i in range(len(clients)):
+                    if clients[i] == 1:
+                        self.clients.add(Client(self, lane=i))
 
         beers_catched  = pygame.sprite.spritecollide(self.bartender, self.beers, False)
         for beer_catched in beers_catched:

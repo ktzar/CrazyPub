@@ -24,8 +24,11 @@ class Stage():
 
 
     def get_clients_in_t(self, time):
-        return self.level_data[time]
-        pass
+        print "{0} of {1}".format(time, len(self.level_data))
+        if time >= len(self.level_data) :
+            return False
+        else:
+            return self.level_data[time]
 
     def get_max_time(self):
         return len(self.level_data)

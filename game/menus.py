@@ -3,6 +3,8 @@ from pygame.locals import *
 import utils
 import math
 import pickle
+import highscore
+from highscore import *
 
 class Abstract_Menu():
     def __init__(self, screen):
@@ -164,14 +166,12 @@ class Highscores(Abstract_Menu):
         self.line_height = 40
         self.left_margin = 52
 
-        try:
-            self.highscores = pickle.load(open('highscores.p', 'rb'))
-        except:
-            self.highscores = [ {'name':'kTzAR','score':22000} ]
-            pickle.dump(self.highscores, open('highscores.p', 'wb'))
-            print "Highscores file not available, created new"
+        highscores_data = Highscores_data()
+
+        self.highscores = highscores_data.get_highscores()
 
         self.options = [ 'HIGH-SCORES' ]
+
         for highscore in self.highscores :
             self.options.append(highscore['name']+': '+str(highscore['score']))
 
@@ -199,9 +199,8 @@ class Newhighscore(Abstract_Menu):
     def loop(self):
         self.age_2 += 1
         Abstract_Menu.loop(self, False)
-        if self.age_2 % 20 < 15:
-            text = self.font.render(self.player_name, 2, (255,255,255))
-            self.screen.blit(text, (50, 300))
+        text = self.font.render(self.player_name, 2, (255,255,255))
+        self.screen.blit(text, (50, 300))
 
         pygame.display.flip()
 
@@ -216,17 +215,20 @@ class Newhighscore(Abstract_Menu):
                 if self.any_key_pressed == False:
                     self.player_name = ''
                     self.any_key_pressed = True
-                if event.key == K_RETURN:
-                    #TODO store highscore
-                    self.finished = False
-                    return
-                #Remove the last character
-                if event.key == K_BACKSPACE:
-                    self.player_name = self.player_name[:-1]
-                    return
+                #convert letter and add it to the name
                 try:
                     typed_character = chr(event.key)
                     self.player_name += typed_character
                 except:
                     pass
+                if event.key == K_RETURN:
+                    #TODO store highscore
+                    highscores = Highscores_data()
+                    highscores.set_newhighscore(self.player_name, self.bartending.score)
+                    self.finished = True
+                    return
+                #Remove the last character
+                if event.key == K_BACKSPACE:
+                    self.player_name = self.player_name[:-1]
+                    return
         return True
