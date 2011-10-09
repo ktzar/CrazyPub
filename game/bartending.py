@@ -39,10 +39,12 @@ class Bartending():
 
         #game variables
         self.clients_served = 0
-        self.speed  = 50 #the lower the faster
-        self.score  = 0
-        self.mugs   = 10
-        self.time   = 0 #to check the stage for clients
+        self.speed          = 50 #the lower the faster
+        self.score          = 0
+        self.mugs           = 10
+        self.time           = 0 #to check the stage for clients
+        self.client_score   = 500
+        self.mug_score      = 500
 
         #Display The Background
         self.screen.blit(self.background, (0, 0))
@@ -88,9 +90,10 @@ class Bartending():
             else:
                 self.mugs -= 1
         else:
-            self.score += 500
+            self.score += self.mug_score
 
     def break_beer(self):
+        self.sounds['glass'].play()
         if self.mugs < 1:
             self.game_finished = True
         else:
