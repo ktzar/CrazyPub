@@ -41,11 +41,8 @@ class Bartending():
         self.game_paused = False
         #sounds
         self.sounds = {};
-        self.sounds['music'] = utils.load_sound('music.ogg')
         self.sounds['glass'] = utils.load_sound('glass.ogg')
         self.sounds['throw'] = utils.load_sound('throw.ogg')
-        if self.options['Music'] == "On":
-            self.sounds['music'].play()
         #Create The Backgound
         self.background, foo = utils.load_image('back.png')
 

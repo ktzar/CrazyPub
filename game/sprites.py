@@ -86,6 +86,7 @@ class Bartender(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image_still, self.rect = utils.load_image('tender.png')
         self.image_moving, foo = utils.load_image('tender_moving.png')
+        self.image = self.image_moving
         self.cur_lane = 0
         self.num_lanes = 4
         self.state = Bartender.STILL

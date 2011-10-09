@@ -47,23 +47,26 @@ class Abstract_Menu():
                     self.selected_option = self.chosen_option
         return True
 
+    #Select next option
     def option_down(self):
         if self.chosen_option != len(self.options)-1:
             self.chosen_option += 1
 
+    #Select previous option
     def option_up(self):
         if self.chosen_option != 0:
             self.chosen_option -= 1
 
-    def loop(self, flip=True):
+    #show background, logo, and items in self.options, highlighting the currently chosen
+    def loop(self, flip=True, handlekeys = True):
         self.screen.blit(self.background, (0, 0))
         self.screen.blit(self.logo, (10, 50))
         self.age +=0.15
 
-        esc_pressed = self.handle_keys()
-        if esc_pressed == False:
-            return False
-
+        if handlekeys == True:
+            esc_pressed = self.handle_keys()
+            if esc_pressed == False:
+                return False
 
         y = 200
         x = self.left_margin
@@ -113,16 +116,17 @@ class Options(Abstract_Menu):
         Abstract_Menu.handle_keys(self)
         for event in self.events:
             if event.type == KEYDOWN:                 
-                if event.key == K_LEFT or event.key == K_RIGHT:
+                if event.key == K_LEFT or event.key == K_RIGHT or event.key == K_RETURN:
                     print "Chosen option "+str(self.chosen_option)
                     self.toggle_option(self.chosen_option)
+                if event.key == K_ESCAPE:
+                    self.finished = True
         return True
 
     def loop(self):
         #set options
         self.options = []
         for value in self.values:
-            print value
             self.options.append('{0}: {1}'.format(value,self.values[value]))
         self.options.append('Back')
         Abstract_Menu.loop(self)
@@ -158,17 +162,14 @@ class About(Abstract_Menu):
             'Game design: kTzAR',
             'Game development: kTzAR',
             'Music: ORIGAMI by DANJYON KIMURA',
-            'Press ESC to go back',
         ]
 
     def handle_keys(self):
-        #Only listen to ESC, don't execute parent's handle_keys
-        #since there are no options to choose from
+        #Exit on any key
         self.events = pygame.event.get()
         for event in self.events:
             if event.type == KEYDOWN:                 
-                if event.key == K_ESCAPE:
-                    self.finished = True
+                self.finished = True
         return True
 
 class Highscores(Abstract_Menu):
@@ -196,25 +197,30 @@ class Highscores(Abstract_Menu):
                 self.finished = True
         return True
 
+#Ask for a highscore
 class Newhighscore(Abstract_Menu):
+
     def __init__(self, screen, bartending):
         Abstract_Menu.__init__(self, screen)
-        self.font = utils.load_font('saloon.ttf', 16)
-        self.player_name = 'Insert your name'
-        self.bartending = bartending
+        self.font           = utils.load_font('saloon.ttf', 16)
+        self.font_name      = utils.load_font('saloon.ttf', 22)
+        self.player_name    = 'AAA'
+        self.bartending     = bartending
         self.any_key_pressed = False
         self.age_2 = 0
 
         #No options in this menu
         self.options = [ 'New High score', 'You made {0} points'.format(self.bartending.score)]
+
     def loop(self):
         self.age_2 += 1
-        Abstract_Menu.loop(self, False)
-        text = self.font.render(self.player_name, 2, (255,255,255))
+        Abstract_Menu.loop(self, False, False)
+        text = self.font_name.render(self.player_name, 2, (0,0,0))
+        self.screen.blit(text, (52, 302))
+        text = self.font_name.render(self.player_name, 2, (255,255,255))
         self.screen.blit(text, (50, 300))
-
+        self.handle_keys()
         pygame.display.flip()
-
 
     def handle_keys(self):
         #Only listen to ESC, don't execute parent's handle_keys
@@ -232,15 +238,15 @@ class Newhighscore(Abstract_Menu):
                     self.player_name += typed_character
                 except:
                     pass
+
                 if event.key == K_RETURN:
                     #TODO store highscore
                     highscores = Highscores_data()
                     print "Save new highscore {0} : {1}".format(self.player_name, self.bartending.score)
-                    highscores.set_newhighscore(self.player_name, self.bartending.score)
+                    highscores.set_newhighscore(self.player_name.strip(), self.bartending.score)
                     self.finished = True
-                    return
+                    return True
                 #Remove the last character
                 if event.key == K_BACKSPACE:
                     self.player_name = self.player_name[:-1]
-                    return
         return True

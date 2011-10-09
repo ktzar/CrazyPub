@@ -58,17 +58,17 @@ def CrazyPub():
                 newhighscore.loop()
                 #Name entered
                 if newhighscore.finished == True:
+                    newhighscore = False #So it's generated the next time
                     menu = Menu(screen)
                     bartending = Bartending(screen)
         elif menu.selected_option == 1:
             options.loop()
             if options.finished == True:
                 #recreate menu and stop music if it was playing
-                if options.values['Music'] == 'Off':
-                    try:
-                        music.stop()
-                    except NameError:
-                        pass
+                try:
+                    music.stop()
+                except NameError:
+                    pass
                 menu    = Menu(screen)
                 options = Options(screen)
         elif menu.selected_option == 2:
@@ -83,6 +83,6 @@ def CrazyPub():
                 #recreate menu
                 about   = About(screen)
                 menu    = Menu(screen)
-        elif menu.selected_option == 3:
+        elif menu.selected_option == 4:
             pygame.quit()
             quit()
