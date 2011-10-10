@@ -71,6 +71,12 @@ class Abstract_Menu():
         y = 200
         x = self.left_margin
         i = 0
+        #Calculate the longest option to center them
+        max_len = 0
+        for option in self.options:
+            if max_len < len(option):
+                max_len = len(option)
+
         for option in self.options:
             if i==self.chosen_option:
                 color = (255,100,100)
@@ -81,9 +87,9 @@ class Abstract_Menu():
                 angle = 0
                 _y = y
 
-            text = self.font.render(option, 2, (0,0,0,0))
+            text = self.font.render(option.center(max_len), 2, (0,0,0,0))
             self.screen.blit(text, (x, _y+2))
-            text = self.font.render(option, 2, color)
+            text = self.font.render(option.center(max_len), 2, color)
             self.screen.blit(text, (x, _y))
             y += self.line_height
             i += 1
