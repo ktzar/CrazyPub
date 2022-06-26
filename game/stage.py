@@ -13,7 +13,7 @@
 
 import random
 import pygame
-import utils
+from . import utils
 
 
 """Stage"""
@@ -40,7 +40,7 @@ class Stage():
         if time >= len(self.level_data) :
             return False
         else:
-            return self.level_data[time]
+            return self.level_data[int(time)]
 
     def get_max_time(self):
         return len(self.level_data)

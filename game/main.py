@@ -14,14 +14,14 @@
 import os, pygame, time
 import random
 from pygame.locals import *
-from bartending import *
-from menus import *
+from .bartending import *
+from .menus import *
 
 
 def CrazyPub():
     pygame.init()
-    if not pygame.font: print 'Warning, fonts disabled'
-    if not pygame.mixer: print 'Warning, sound disabled'
+    if not pygame.font: print('Warning, fonts disabled')
+    if not pygame.mixer: print('Warning, sound disabled')
     screen = pygame.display.set_mode((512, 480), pygame.DOUBLEBUF)
     pygame.display.set_caption('Crazy Pub')
     #pygame.display.toggle_fullscreen()

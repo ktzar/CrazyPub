@@ -22,7 +22,7 @@ class Highscores_data():
         try:
             self.values = pickle.load(open('highscores.p', 'rb'))
         except:
-            print "Highscores file not available, creating new one"
+            print("Highscores file not available, creating new one")
             self.values = []
             for i in range(0,self.num_highscores):
                 #Choose a random name
@@ -47,6 +47,6 @@ class Highscores_data():
 
     def print_highscores(self):
         for score in self.values:
-            print "{0}: {1}\n".format(score['name'], score['score'])
+            print("{0}: {1}\n".format(score['name'], score['score']))
 
 

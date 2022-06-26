@@ -12,11 +12,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import pygame
 from pygame.locals import *
-import utils
+from . import utils
 import math
 import pickle
-import highscore
-from highscore import *
+from . import highscore
+from .highscore import *
 
 class Abstract_Menu():
     def __init__(self, screen):
@@ -114,7 +114,7 @@ class Options(Abstract_Menu):
         try:
             self.values = pickle.load(open('options.p', 'rb'))
         except:
-            print "Options file not available"
+            print("Options file not available")
         self.go_back = False
 
     def handle_keys(self):
@@ -123,7 +123,7 @@ class Options(Abstract_Menu):
         for event in self.events:
             if event.type == KEYDOWN:                 
                 if event.key == K_LEFT or event.key == K_RIGHT or event.key == K_RETURN:
-                    print "Chosen option "+str(self.chosen_option)
+                    print("Chosen option "+str(self.chosen_option))
                     self.toggle_option(self.chosen_option)
                 if event.key == K_ESCAPE:
                     self.finished = True
@@ -216,7 +216,7 @@ class Newhighscore(Abstract_Menu):
         self.age_2 = 0
 
         #No options in this menu
-        self.options = [ 'New High score', 'You made {0} points'.format(self.bartending.score)]
+        self.options = [ 'New High score', 'You got {0} points'.format(self.bartending.score)]
 
     def loop(self):
         self.age_2 += 1
@@ -248,7 +248,7 @@ class Newhighscore(Abstract_Menu):
                 if event.key == K_RETURN:
                     #TODO store highscore
                     highscores = Highscores_data()
-                    print "Save new highscore {0} : {1}".format(self.player_name, self.bartending.score)
+                    print("Save new highscore {0} : {1}".format(self.player_name, self.bartending.score))
                     highscores.set_newhighscore(self.player_name.strip(), self.bartending.score)
                     self.finished = True
                     return True

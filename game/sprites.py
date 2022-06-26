@@ -1,6 +1,6 @@
 import pygame
 import random
-import utils
+from . import utils
 
 
 class Client(pygame.sprite.Sprite):

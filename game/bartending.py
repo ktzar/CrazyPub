@@ -13,9 +13,9 @@
 import os, pygame, time
 import random
 from pygame.locals import *
-from sprites import *
-from stage import *
-import utils
+from .sprites import *
+from .stage import *
+from . import utils
 import pickle
 
 
@@ -35,7 +35,7 @@ class Bartending():
         try:
             self.options = pickle.load(open('options.p', 'rb'))
         except:
-            print "No options"
+            print("No options")
             self.options = {'Difficulty':'Hard', 'Music':'Off'}
 
         self.game_paused = False
